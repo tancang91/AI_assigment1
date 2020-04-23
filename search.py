@@ -24,6 +24,8 @@ class Node:
         self.data = data
         self.parent = parent if parent is not None else None
 
+
+
 class SearchProblem:
     """
     This class outlines the structure of a search problem, but doesn't implement
@@ -66,6 +68,23 @@ class SearchProblem:
         """
         util.raiseNotDefined()
 
+
+def get_path(node):
+    path = []
+    temp = node
+    while temp is not None:
+        path.append(temp.data[1])
+        temp = temp.parent
+
+    path.pop()
+    l = 0
+    r = len(path) - 1
+    while (l < r):
+        path[l], path[r] = path[r], path[l]
+        l += 1; r -= 1
+
+    return path
+
 def tinyMazeSearch(problem):
     """
     Returns a sequence of moves that solves tinyMaze.  For any other maze, the
@@ -91,26 +110,23 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    from game import Directions
     from util import Stack
 
     frontier = Stack()
-    explored_list = set()
+    visited_list = set()
 
     start_state = problem.getStartState()
     frontier.push(Node((start_state,None,0), None))
-    explored_list.add(start_state)
-
 
     current_state = None
     node = None
     is_goal = False
-    while(not frontier.isEmpty()):
+    while(not frontier.isEmpty() and not is_goal):
         node = frontier.pop()
         current_state = node.data
 
-        if not current_state[0] in explored_list:
-            explored_list.add(current_state[0])
+        if not current_state[0] in visited_list:
+            visited_list.add(current_state[0])
 
         if problem.isGoalState(current_state[0]):
             is_goal = True
@@ -118,35 +134,60 @@ def depthFirstSearch(problem):
 
         successors = problem.getSuccessors(current_state[0])
         for successor in successors:
-            if not successor[0] in explored_list:
+            if not successor[0] in visited_list:
                 frontier.push(Node(successor, node))
 
     path = []
     if is_goal:
-        temp = node
-        while temp is not None:
-            path.append(temp.data[1])
-            temp = temp.parent
-
-        path.pop()
-        l = 0
-        r = len(path) - 1
-        while (l < r):
-            path[l], path[r] = path[r], path[l]
-            l += 1; r -= 1
+        path = get_path(node)
 
     return path
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import Queue
 
+    frontier = Queue()
+    visited_list = set()
+
+    start_state = problem.getStartState()
+    frontier.push(Node((start_state,None,0), None))
+    visited_list.add(start_state)
+
+    current_state = None
+    node = None
+    is_goal = False
+    while(not frontier.isEmpty() and not is_goal):
+        node = frontier.pop()
+        current_state = node.data
+
+        if problem.isGoalState(current_state[0]):
+            is_goal = True
+            break
+
+        successors = problem.getSuccessors(current_state[0])
+        for successor in successors:
+            # data is location
+            data = successor[0]
+            if not data in visited_list:
+                new_node = Node(successor, node)
+                frontier.push(new_node)
+                visited_list.add(data)
+
+    path = []
+    if is_goal:
+        path = get_path(node)
+
+    return path
+
+# TODO
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
 
+# TODO
 def nullHeuristic(state, problem=None):
     """
     A heuristic function estimates the cost from the current state to the nearest
@@ -154,6 +195,7 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
+# TODO
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
