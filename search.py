@@ -213,8 +213,11 @@ def uniformCostSearch(problem):
             new_cost = current_cost[current_state] + cost
             if not next_state in current_cost or new_cost < current_cost[next_state]:
                 current_cost[next_state] = new_cost
-                frontier.push(next_state, new_cost)
                 parent[next_state] = (current_state, action)
+
+                # UCS is dijkstra algorithms, with priority actual cost from start node to node
+                priority = new_cost
+                frontier.push(next_state, priority)
 
     path = []
     current = goal
@@ -229,7 +232,6 @@ def uniformCostSearch(problem):
     return path
 
 
-# TODO
 def nullHeuristic(state, problem=None):
     """
     A heuristic function estimates the cost from the current state to the nearest
@@ -237,12 +239,57 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
-# TODO
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import PriorityQueue
+    # from searchAgents import manhattanHeuristic
 
+    start_state = problem.getStartState()
+
+    frontier = PriorityQueue()
+    parent = {}
+    current_cost = {}
+
+    frontier.push(start_state,0)
+    parent[start_state] = None
+    current_cost[start_state] = 0
+
+    goal = None
+    while(not frontier.isEmpty()):
+        current_state = frontier.pop()
+
+        if problem.isGoalState(current_state):
+            goal = current_state
+            break
+
+        successors = problem.getSuccessors(current_state)
+        for successor in successors:
+            next_state = successor[0]
+            action = successor[1]
+            cost = successor[2]
+
+            new_cost = current_cost[current_state] + cost # Actual cost of child node
+
+            if not next_state in current_cost or new_cost  < current_cost[next_state]:
+                current_cost[next_state] = new_cost
+                parent[next_state] = (current_state, action)
+
+                # A star is dijkstra algorithms extention include heuristic cost
+                priority = new_cost + heuristic(next_state, problem)
+                frontier.push(next_state, priority)
+
+    path = []
+    current = goal
+    if goal is not None:
+        while current != start_state:
+            parent_location = parent[current][0]
+            action = parent[current][1]
+
+            current = parent_location
+            path.append(action)
+        path = list(reversed(path))
+    return path
 
 # Abbreviations
 bfs = breadthFirstSearch
