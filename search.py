@@ -23,6 +23,7 @@ class Node:
     def __init__(self, data, parent=None):
         self.data = data
         self.parent = parent if parent is not None else None
+        self.cost = 0
 
 
 
@@ -181,11 +182,52 @@ def breadthFirstSearch(problem):
 
     return path
 
-# TODO
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import PriorityQueue
+
+    start_state = problem.getStartState()
+
+    frontier = PriorityQueue()
+    parent = {}
+    current_cost = {}
+
+    frontier.push(start_state,0)
+    parent[start_state] = None
+    current_cost[start_state] = 0
+
+    goal = None
+    while(not frontier.isEmpty()):
+        current_state = frontier.pop()
+
+        if problem.isGoalState(current_state):
+            goal = current_state
+            break
+
+        successors = problem.getSuccessors(current_state)
+        for successor in successors:
+            next_state = successor[0]
+            action = successor[1]
+            cost = successor[2]
+            new_cost = current_cost[current_state] + cost
+            if not next_state in current_cost or new_cost < current_cost[next_state]:
+                current_cost[next_state] = new_cost
+                frontier.push(next_state, new_cost)
+                parent[next_state] = (current_state, action)
+
+    path = []
+    current = goal
+    if goal is not None:
+        while current != start_state:
+            parent_location = parent[current][0]
+            action = parent[current][1]
+
+            current = parent_location
+            path.append(action)
+        path = list(reversed(path))
+    return path
+
 
 # TODO
 def nullHeuristic(state, problem=None):
