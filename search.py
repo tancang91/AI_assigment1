@@ -145,40 +145,49 @@ def depthFirstSearch(problem):
     return path
 
 def breadthFirstSearch(problem):
-    """Search the shallowest nodes in the search tree first."""
+    """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
     from util import Queue
 
-    frontier = Queue()
-    visited_list = set()
-
     start_state = problem.getStartState()
-    frontier.push(Node((start_state,None,0), None))
-    visited_list.add(start_state)
 
-    current_state = None
-    node = None
-    is_goal = False
-    while(not frontier.isEmpty() and not is_goal):
-        node = frontier.pop()
-        current_state = node.data
+    frontier = Queue()
+    parent = {}
+    current_cost = {}
 
-        if problem.isGoalState(current_state[0]):
-            is_goal = True
+    frontier.push(start_state)
+    parent[start_state] = None
+    current_cost[start_state] = 0
+
+    goal = None
+    while(not frontier.isEmpty()):
+        current_state = frontier.pop()
+
+        if problem.isGoalState(current_state):
+            goal = current_state
             break
 
-        successors = problem.getSuccessors(current_state[0])
+        successors = problem.getSuccessors(current_state)
         for successor in successors:
-            # data is location
-            data = successor[0]
-            if not data in visited_list:
-                new_node = Node(successor, node)
-                frontier.push(new_node)
-                visited_list.add(data)
+            next_state = successor[0]
+            action = successor[1]
+            cost = successor[2]
+            new_cost = current_cost[current_state] + cost
+            if not next_state in current_cost:
+                current_cost[next_state] = new_cost
+                parent[next_state] = (current_state, action)
+                frontier.push(next_state)
 
     path = []
-    if is_goal:
-        path = get_path(node)
+    current = goal
+    if goal is not None:
+        while current != start_state:
+            parent_location = parent[current][0]
+            action = parent[current][1]
+
+            current = parent_location
+            path.append(action)
+        path = list(reversed(path))
 
     return path
 
