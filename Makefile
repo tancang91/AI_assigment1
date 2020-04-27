@@ -12,6 +12,9 @@ problem4:
 problem5:
 	python3 pacman.py -l mediumCorners -p SearchAgent -a fn=bfs,prob=CornersProblem
 
+problem6:
+	python3 pacman.py -l bigCorners -p AStarCornersAgent -z 0.5	
+
 debug:
 	 pudb3 pacman.py -l tinyMaze -p SearchAgent -a fn=$(FUNCTION)
 

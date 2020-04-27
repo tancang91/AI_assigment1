@@ -373,7 +373,21 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    # euclid_dist_func = 
+        # lambda xy1,xy2: ((xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1])**2) ** 0.5
+
+    mahant_dist_func = lambda xy1,xy2: abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+    x,y = state[0]
+    reached_corners = state[1]
+
+    heuristic_cost = 0
+    if not walls[x][y] and not problem.isGoalState(state):
+        unreached_corners = [corners[i] for i, c in enumerate(reached_corners) if c == 0]
+        unreached_costs = [mahant_dist_func((x,y), corner) for corner in unreached_corners]
+        # unreached_costs = [euclid_dist_func((x,y), corner) for corner in unreached_corners]
+        heuristic_cost = max(unreached_costs)
+
+    return heuristic_cost # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
