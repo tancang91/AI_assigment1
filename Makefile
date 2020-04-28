@@ -15,6 +15,9 @@ problem5:
 problem6:
 	python3 pacman.py -l bigCorners -p AStarCornersAgent -z 0.5	
 
+problem7:
+	python3 pacman.py -l trickySearch -p AStarFoodSearchAgent
+
 debug:
 	 pudb3 pacman.py -l tinyMaze -p SearchAgent -a fn=$(FUNCTION)
 

@@ -481,7 +481,18 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    from util import manhattanDistance
+
+    walls = problem.walls
+    x,y = position
+
+    heuristic_cost = 0
+    if not walls[x][y] and not problem.isGoalState(state):
+        remain_food = foodGrid.asList()
+        remain_food_costs = [manhattanDistance(position, food) for food in remain_food]
+        heuristic_cost = max(remain_food_costs)
+
+    return heuristic_cost
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -548,7 +559,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return state
 
 def mazeDistance(point1, point2, gameState):
     """
